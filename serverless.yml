@@ -33,7 +33,7 @@ resources:
       Properties:
         Name: pipeline-example-kickstart-${self:custom.stage}
         ServiceRole:
-          Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmAWSCodeBuildExecutionRole
+          Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmCodebuildExecutionRole
         Artifacts:
           Type: CODEPIPELINE
         BadgeEnabled: false
@@ -64,7 +64,7 @@ resources:
       Type: AWS::CodePipeline::Pipeline
       Properties:
         RoleArn:
-          arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmAWSCodePipelineExecutionRole
+          arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmCodePipelineExecutionRole
         Name: pipeline-example-kickstart-${self:custom.stage}
         ArtifactStore:
           Type: S3

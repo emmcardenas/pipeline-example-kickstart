@@ -11,7 +11,7 @@ Resources:
     Type: AWS::CodeBuild::Project
     Properties:
       ServiceRole:
-        Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmAWSCodeBuildExecutionRole
+        Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmCodebuildExecutionRole
       Artifacts:
         Type: CODEPIPELINE
       BadgeEnabled: false
@@ -41,7 +41,7 @@ Resources:
         Location:
           Fn::ImportValue: artifactbucket
       RoleArn:
-        Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmAWSCodePipelineExecutionRole
+        Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmCodePipelineExecutionRole
       Stages:
       - Name: source
         Actions:
