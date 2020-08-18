@@ -5,7 +5,7 @@ env:
     STAGE: stg
   parameter-store:
     GITHUB_TOKEN: /emm/devops/github/token
-    #HELLHOUND_API_KEY: /emm/hellhound/apikey
+    HELLHOUND_API_KEY: /emm/hellhound/apikey
 
 phases:
   install:
