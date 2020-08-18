@@ -9,7 +9,7 @@ custom:
   stage: ${opt:env}
   config:
     default:
-      repo_owner: ${opt:repo-owner, 'gbmcode'}
+      repo_owner: ${opt:repo-owner, 'emmcardenas'}
       github_oauth_token: ${opt:github-token, env:GITHUB_TOKEN}
       artifacts_bucket: emm-pipeline-example-source-artifactbucket-${opt:user, self:custom.stage}
       branch: ${file(pipelines/serverless.yml):custom.config.${self:custom.stage}.branch}

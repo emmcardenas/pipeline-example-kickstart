@@ -13,7 +13,7 @@ custom:
   stage: ${opt:env, 'stg'}
   config:
     default:
-      repo_owner: ${opt:repo-owner, 'gbmcode'}
+      repo_owner: ${opt:repo-owner, 'emmcardenas'}
       github_oauth_token: ${opt:github-token, env:GITHUB_TOKEN}
       artifacts_bucket: emm-pipeline-example-kickstart-artifactbucket-${self:provider.stage}
       hellhound_api_key: ${env:HELLHOUND_API_KEY}
