@@ -42,6 +42,7 @@ Resources:
           Fn::ImportValue: artifactbucket
       RoleArn:
         Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmCodePipelineExecutionRole
+      Name: api-class-example-${self:custom.stage}
       Stages:
       - Name: source
         Actions:

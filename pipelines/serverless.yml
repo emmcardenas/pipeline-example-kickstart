@@ -42,7 +42,7 @@ custom:
 #    role: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/EmmAWSMasterbuilderLambdaExecutionRole
 #    environment:
 #      #security_api_url: https://s1t9xlifil.execute-api.us-east-1.amazonaws.com/stg
-#      #webhook_url: https://outlook.office.com/webhook/ec48bbe3-add7-48f5-bae3-9d5f31f8b6d7@3104c54a-4a4a-4732-9dd4-34ce309ba7c4/IncomingWebhook/0e942bef13694ee88b5a2043079d36e1/4052f014-9897-4ad6-8a7c-e131cae87f81
+#      #webhook_url: https://outlook.office.com/webhook/
 #      repo_url: https://github.com/emmcardenas/api-example-class.git
 #      api_key: ${self:custom.config.default.hellhound_api_key}
 
