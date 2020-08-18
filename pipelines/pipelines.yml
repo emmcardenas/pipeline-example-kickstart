@@ -52,8 +52,8 @@ Resources:
             Version: '1'
             Provider: GitHub
           Configuration:
-            Owner: gbmcode
-            Repo: hellhound
+            Owner: emmcardenas
+            Repo: api-example-class
             Branch: ${self:custom.config.${self:provider.stage}.branch}
             OAuthToken: ${env:GITHUB_TOKEN}
             PollForSourceChanges: false
