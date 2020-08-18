@@ -18,7 +18,7 @@ custom:
       artifacts_bucket: emm-pipeline-example-kickstart-artifactbucket-${self:provider.stage}
       hellhound_api_key: ${env:HELLHOUND_API_KEY}
     stg:
-      account_id: "399167615532"
+      account_id: "723706874016"
       branch: master
       json_path: $.ref
       match_equals: refs/heads/{Branch}

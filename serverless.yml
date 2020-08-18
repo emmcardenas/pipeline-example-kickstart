@@ -16,7 +16,7 @@ custom:
       json_path: ${file(pipelines/serverless.yml):custom.config.${self:custom.stage}.json_path}
       match_equals: ${file(pipelines/serverless.yml):custom.config.${self:custom.stage}.match_equals}
     stg:
-      account_id: "399167615532"
+      account_id: "723706874016"
       stack_name: ${self:service}-${self:custom.stage}
     prd:
       account_id: ""
