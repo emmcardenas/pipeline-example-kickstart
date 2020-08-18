@@ -1,0 +1,111 @@
+---
+Conditions:
+  IsStageEnvironment:
+    Fn::Equals:
+    - ${self:provider.stage}
+    - stg
+
+Resources:
+
+  BaseDeployCodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      ServiceRole:
+        Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmAWSCodeBuildExecutionRole
+      Artifacts:
+        Type: CODEPIPELINE
+      BadgeEnabled: false
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:3.0
+        EnvironmentVariables:
+        - Name: STAGE
+          Value: ${self:provider.stage}
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: buildspec.yml
+      TimeoutInMinutes: 30
+      Tags:
+      - Key: Name
+        Value: base-infrastructure
+      - Key: managed-by
+        Value: serverless
+
+
+  BasePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Type: S3
+        Location:
+          Fn::ImportValue: artifactbucket
+      RoleArn:
+        Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmAWSCodePipelineExecutionRole
+      Stages:
+      - Name: source
+        Actions:
+        - Name: source-infrastructure
+          ActionTypeId:
+            Category: Source
+            Owner: ThirdParty
+            Version: '1'
+            Provider: GitHub
+          Configuration:
+            Owner: gbmcode
+            Repo: hellhound
+            Branch: ${self:custom.config.${self:provider.stage}.branch}
+            OAuthToken: ${env:GITHUB_TOKEN}
+            PollForSourceChanges: false
+          OutputArtifacts:
+          - Name: SourceInfra
+          RunOrder: 1
+      - Fn::If:
+        - IsStageEnvironment
+        - Name: security-scan
+          Actions:
+          - Name: scan-hellhound
+            ActionTypeId:
+              Category: Invoke
+              Owner: AWS
+              Version: '1'
+              Provider: Lambda
+            Configuration:
+              FunctionName:
+                Ref: ScanCodeLambdaFunction
+              UserParameters: '{"repo_url":"https://github.com/emmcardenas/api-example-class.git"}' 
+            RunOrder: 1
+        - Ref: AWS::NoValue
+      - Name: deploy
+        Actions:
+        - Name: deploy-infrastructure
+          ActionTypeId:
+            Category: Build
+            Owner: AWS
+            Version: '1'
+            Provider: CodeBuild
+          Configuration:
+            ProjectName:
+              Ref: BaseDeployCodeBuildProject
+            PrimarySource: SourceInfra
+          InputArtifacts:
+          - Name: SourceInfra
+          RunOrder: 1
+
+  BasePipelineWebhookInfra:
+    Type: 'AWS::CodePipeline::Webhook'
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: ${env:GITHUB_TOKEN}
+      Filters:
+      - JsonPath: ${self:custom.config.${self:provider.stage}.json_path}
+        MatchEquals: ${self:custom.config.${self:provider.stage}.match_equals}
+      TargetPipeline:
+        Ref: BasePipeline
+      TargetAction: source-infrastructure
+      TargetPipelineVersion:
+        Fn::GetAtt: [BasePipeline, Version]
+      RegisterWithThirdParty: true
+
+...

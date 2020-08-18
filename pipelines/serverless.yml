@@ -1,0 +1,50 @@
+service: ${self:custom.service}-pipelines
+
+plugins:
+  - serverless-python-requirements
+provider:
+  name: aws
+  stage: ${self:custom.stage}
+  region: ${opt:region, 'us-east-1'}
+  cfnRole: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/EmmAWSCloudFormationExecutionRole
+  versionFunctions: false
+custom:
+  service: pipeline-example-kickstart
+  stage: ${opt:env, 'stg'}
+  config:
+    default:
+      repo_owner: ${opt:repo-owner, 'gbmcode'}
+      github_oauth_token: ${opt:github-token, env:GITHUB_TOKEN}
+      artifacts_bucket: emm-pipeline-example-kickstart-artifactbucket-${self:provider.stage}
+      hellhound_api_key: ${env:HELLHOUND_API_KEY}
+    stg:
+      account_id: "399167615532"
+      branch: master
+      json_path: $.ref
+      match_equals: refs/heads/{Branch}
+      stacksets_enabled: false
+    prd:
+      account_id: ""
+      branch: master
+      json_path: $.ref_type
+      match_equals: tag
+      stacksets_enabled: true
+  pythonRequirements:
+    dockerizePip: non-linux
+    fileName: functions/requirements.txt
+
+#functions:
+#  scanCode:
+#    runtime: python3.7
+#    handler: functions.scan.lambda_handler
+#    timeout: 30
+#    memorySize: 128
+#    role: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/EmmAWSMasterbuilderLambdaExecutionRole
+#    environment:
+#      #security_api_url: https://s1t9xlifil.execute-api.us-east-1.amazonaws.com/stg
+#      #webhook_url: https://outlook.office.com/webhook/ec48bbe3-add7-48f5-bae3-9d5f31f8b6d7@3104c54a-4a4a-4732-9dd4-34ce309ba7c4/IncomingWebhook/0e942bef13694ee88b5a2043079d36e1/4052f014-9897-4ad6-8a7c-e131cae87f81
+#      repo_url: https://github.com/emmcardenas/api-example-class.git
+#      api_key: ${self:custom.config.default.hellhound_api_key}
+
+resources:
+- ${file(pipelines.yml)}

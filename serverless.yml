@@ -1,0 +1,128 @@
+service: pipeline-example-kickstart
+
+provider:
+  name: aws
+  stackName: ${self:custom.config.${self:custom.stage}.stack_name}
+  stage: ${self:custom.stage}
+  cfnRole: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmAWSCloudFormationExecutionRole # ARN of an IAM role for CloudFormation service. If specified, CloudFormation uses the role's credentials
+custom:
+  stage: ${opt:env}
+  config:
+    default:
+      repo_owner: ${opt:repo-owner, 'gbmcode'}
+      github_oauth_token: ${opt:github-token, env:GITHUB_TOKEN}
+      artifacts_bucket: emm-pipeline-example-source-artifactbucket-${opt:user, self:custom.stage}
+      branch: ${file(pipelines/serverless.yml):custom.config.${self:custom.stage}.branch}
+      json_path: ${file(pipelines/serverless.yml):custom.config.${self:custom.stage}.json_path}
+      match_equals: ${file(pipelines/serverless.yml):custom.config.${self:custom.stage}.match_equals}
+    stg:
+      account_id: "399167615532"
+      stack_name: ${self:service}-${self:custom.stage}
+    prd:
+      account_id: ""
+      stack_name: ${self:service}-${self:custom.stage}
+resources:
+  Resources:
+    artifactbucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.config.default.artifacts_bucket}
+        AccessControl: BucketOwnerFullControl
+    CodeBuildProject:
+      Type: AWS::CodeBuild::Project
+      Properties:
+        Name: pipeline-example-kickstart-${self:custom.stage}
+        ServiceRole:
+          Fn::Sub: arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmAWSCodeBuildExecutionRole
+        Artifacts:
+          Type: CODEPIPELINE
+        BadgeEnabled: false
+        Environment:
+          Type: LINUX_CONTAINER
+          ComputeType: BUILD_GENERAL1_SMALL
+          Image: aws/codebuild/nodejs:10.1.0
+          EnvironmentVariables:
+          - Name: STAGE
+            Type: PLAINTEXT
+            Value: ${self:custom.stage}
+          - Name: REPO_OWNER
+            Type: PLAINTEXT
+            Value: ${self:custom.config.default.repo_owner}
+          - Name: GITHUB_TOKEN
+            Type: PLAINTEXT
+            Value: ${self:custom.config.default.github_oauth_token}
+        Source:
+          Type: CODEPIPELINE
+          BuildSpec: buildspec.yml
+        TimeoutInMinutes: 30
+        Tags:
+        - Key: Name
+          Value: pipeline-example-kickstart
+        - Key: managed-by
+          Value: serverless
+    Pipeline:
+      Type: AWS::CodePipeline::Pipeline
+      Properties:
+        RoleArn:
+          arn:aws:iam::${self:custom.config.${self:custom.stage}.account_id}:role/EmmAWSCodePipelineExecutionRole
+        Name: pipeline-example-kickstart-${self:custom.stage}
+        ArtifactStore:
+          Type: S3
+          Location:
+            Ref: artifactbucket
+        Stages:
+        - Name: Source
+          Actions:
+          - Name: pipeline-example-kickstart
+            ActionTypeId:
+              Category: Source
+              Owner: ThirdParty
+              Version: '1'
+              Provider: GitHub
+            Configuration:
+              Owner: ${self:custom.config.default.repo_owner}
+              Repo: pipeline-example-kickstart
+              Branch: ${self:custom.config.default.branch}
+              OAuthToken: ${self:custom.config.default.github_oauth_token}
+              PollForSourceChanges: false
+            OutputArtifacts:
+            - Name: kickstart
+            RunOrder: 1
+        - Name: Deploy
+          Actions:
+          - Name: deploy-kickstart
+            RunOrder: 1
+            ActionTypeId:
+              Category: Build
+              Owner: AWS
+              Version: '1'
+              Provider: CodeBuild
+            Configuration:
+              ProjectName:
+                Ref: CodeBuildProject
+            InputArtifacts:
+            - Name: kickstart
+    Webhook:
+      Type: AWS::CodePipeline::Webhook
+      Properties:
+        Name: pipeline-example-kickstart-webhook-${opt:user,self:custom.stage}
+        Authentication: GITHUB_HMAC
+        AuthenticationConfiguration:
+          SecretToken: ${self:custom.config.default.github_oauth_token}
+        Filters:
+        - JsonPath: ${self:custom.config.default.json_path}
+          MatchEquals: ${self:custom.config.default.match_equals}
+        TargetPipeline:
+          Ref: Pipeline
+        TargetAction: pipeline-example-kickstart
+        TargetPipelineVersion:
+          Fn::GetAtt:
+          - Pipeline
+          - Version
+        RegisterWithThirdParty: true
+  Outputs:
+    artifactbucket:
+      Value:
+        Ref: artifactbucket
+      Export:
+        Name: artifactbucket

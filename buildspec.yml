@@ -1,0 +1,19 @@
+version: 0.2
+
+env:
+  variables:
+    STAGE: stg
+  parameter-store:
+    GITHUB_TOKEN: /emm/devops/github/token
+    HELLHOUND_API_KEY: /emm/hellhound/apikey
+
+phases:
+  install:
+    commands:
+    - npm install -g serverless@1.38.0
+  pre_build:
+    commands:
+    - (cd pipelines && npm install)
+  build:
+    commands:
+    - (cd pipelines && serverless deploy -v --force --env=${STAGE})
