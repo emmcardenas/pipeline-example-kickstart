@@ -69,7 +69,7 @@ def send_notification(report_url, result, user_parameters):
     sns_client = boto3.client('sns')
     response = sns_client.publish(
         TopicArn='arn:aws:sns:us-east-1:723706874016:security-scan',
-        Message=result
+        Message=json.dumps(report_url)
     )
 
 
