@@ -1,7 +1,7 @@
 service: ${self:custom.service}-pipelines
 
-#plugins:
-#  - serverless-python-requirements
+plugins:
+  - serverless-python-requirements
 provider:
   name: aws
   stage: ${self:custom.stage}
@@ -41,8 +41,7 @@ custom:
 #    memorySize: 128
 #    role: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/EmmAWSMasterbuilderLambdaExecutionRole
 #    environment:
-#      #security_api_url: https://s1t9xlifil.execute-api.us-east-1.amazonaws.com/stg
-#      #webhook_url: https://outlook.office.com/webhook/
+#      security_api_url: https://gw9ryer3tf.execute-api.us-east-1.amazonaws.com/stg
 #      repo_url: https://github.com/emmcardenas/api-example-class.git
 #      api_key: ${self:custom.config.default.hellhound_api_key}
 

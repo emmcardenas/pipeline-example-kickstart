@@ -9,7 +9,7 @@ import os
 
 code_pipeline = boto3.client('codepipeline')
 security_api_url = os.environ['security_api_url']
-webhook_notification_url = os.environ['webhook_url']
+topic_notification_url = os.environ['webhook_url']
 repo_url = os.environ['repo_url']
 api_key = os.environ['api_key']
 headers = {
@@ -65,45 +65,13 @@ def get_report(scan_id, user_parameters):
 
 
 def send_notification(report_url, result, user_parameters):
-    print('send notification to webhook')
+    print('sending notification')
+    sns_client = boto3.client('sns')
+    response = sns_client.publish(
+        TopicArn='arn:aws:sns:us-east-1:723706874016:security-scan',
+        Message=result
+    )
 
-    card = json.loads(CARD_STRING)
-    card['title'] = 'Hellhound results scan: {}'.format(result['scan_id'])
-    text = '<ul>'
-    for vulnerability in report_url['vulnerabilities']:
-        text += '<li> <strong> {} </strong> <ul> <li>severity: {}</li><li>filename: {} line: {} </li></ul> </li>'.format(vulnerability['title'], vulnerability['severity'], vulnerability['filename'], vulnerability['line'])
-    text += '</ul>'
-    card['sections'] = [
-        {
-            'activitySubtitle' : user_parameters['repo_url']
-        },
-        
-        {
-        'title' : '<h1>SUMMARY</h1>',
-        'facts' : [{
-                'name' : 'high',
-                'value' : report_url['summary']['high']
-            },
-            {
-                'name' : 'medium',
-                'value' : report_url['summary']['medium']
-            },
-            {
-                'name' : 'low',
-                'value' : report_url['summary']['low']
-            },
-            {
-                'name' : 'undefined',
-                'value' : report_url['summary']['undefined']
-            }]
-        },
-        {
-            'title' : '<h1>VULNERABILITIES</h1>',
-            'text' : text
-        }
-    ]
-    card['text'] = 'Result: {}'.format(result['status'])
-    print(requests.post(webhook_notification_url, json=card))
 
 def start_job(job_id, user_parameters):
     scan_id_string = json.loads(start_scan(user_parameters))
