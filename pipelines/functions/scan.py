@@ -9,7 +9,7 @@ import os
 
 code_pipeline = boto3.client('codepipeline')
 security_api_url = os.environ['security_api_url']
-topic_notification_url = os.environ['webhook_url']
+topic_notification_url = ''
 repo_url = os.environ['repo_url']
 api_key = os.environ['api_key']
 headers = {
