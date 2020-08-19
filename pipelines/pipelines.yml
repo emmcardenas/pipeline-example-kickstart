@@ -60,22 +60,22 @@ Resources:
           OutputArtifacts:
           - Name: SourceInfra
           RunOrder: 1
-#      - Fn::If:
-#        - IsStageEnvironment
-#        - Name: security-scan
-#          Actions:
-#          - Name: scan-hellhound
-#            ActionTypeId:
-#              Category: Invoke
-#              Owner: AWS
-#              Version: '1'
-#              Provider: Lambda
-#            Configuration:
-#              FunctionName:
-#                Ref: ScanCodeLambdaFunction
-#              UserParameters: '{"repo_url":"https://github.com/emmcardenas/api-example-class.git"}' 
-#            RunOrder: 1
-#        - Ref: AWS::NoValue
+      - Fn::If:
+        - IsStageEnvironment
+        - Name: security-scan
+          Actions:
+          - Name: scan-hellhound
+            ActionTypeId:
+              Category: Invoke
+              Owner: AWS
+              Version: '1'
+              Provider: Lambda
+            Configuration:
+              FunctionName:
+                Ref: ScanCodeLambdaFunction
+              UserParameters: '{"repo_url":"https://github.com/emmcardenas/api-example-class.git"}' 
+            RunOrder: 1
+        - Ref: AWS::NoValue
       - Name: deploy
         Actions:
         - Name: deploy-infrastructure

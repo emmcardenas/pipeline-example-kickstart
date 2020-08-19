@@ -1,7 +1,7 @@
 service: ${self:custom.service}-pipelines
 
-#plugins:
-#  - serverless-python-requirements
+plugins:
+  - serverless-python-requirements
 provider:
   name: aws
   stage: ${self:custom.stage}
@@ -33,17 +33,17 @@ custom:
     dockerizePip: non-linux
     fileName: functions/requirements.txt
 
-#functions:
-#  scanCode:
-#    runtime: python3.7
-#    handler: functions.scan.lambda_handler
-#    timeout: 30
-#    memorySize: 128
-#    role: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/EmmAWSMasterbuilderLambdaExecutionRole
-#    environment:
-#      security_api_url: https://gw9ryer3tf.execute-api.us-east-1.amazonaws.com/stg
-#      repo_url: https://github.com/emmcardenas/api-example-class.git
-#      api_key: ${self:custom.config.default.hellhound_api_key}
+functions:
+  scanCode:
+    runtime: python3.7
+    handler: functions.scan.lambda_handler
+    timeout: 30
+    memorySize: 128
+    role: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/EmmAWSMasterbuilderLambdaExecutionRole
+    environment:
+      security_api_url: https://gw9ryer3tf.execute-api.us-east-1.amazonaws.com/stg
+      repo_url: https://github.com/emmcardenas/api-example-class.git
+      api_key: ${self:custom.config.default.hellhound_api_key}
 
 resources:
 - ${file(pipelines.yml)}
