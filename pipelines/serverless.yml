@@ -24,7 +24,7 @@ custom:
       match_equals: refs/heads/{Branch}
       stacksets_enabled: false
     prd:
-      account_id: ""
+      account_id: "691789668597"
       branch: master
       json_path: $.ref_type
       match_equals: tag

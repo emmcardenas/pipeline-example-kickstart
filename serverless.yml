@@ -19,7 +19,7 @@ custom:
       account_id: "723706874016"
       stack_name: ${self:service}-${self:custom.stage}
     prd:
-      account_id: ""
+      account_id: "691789668597"
       stack_name: ${self:service}-${self:custom.stage}
 resources:
   Resources:
@@ -105,7 +105,7 @@ resources:
     Webhook:
       Type: AWS::CodePipeline::Webhook
       Properties:
-        Name: pipeline-example-kickstart-webhook-${opt:user,self:custom.stage}
+        Name: pipeline-poc-${opt:user,self:custom.stage}
         Authentication: GITHUB_HMAC
         AuthenticationConfiguration:
           SecretToken: ${self:custom.config.default.github_oauth_token}
