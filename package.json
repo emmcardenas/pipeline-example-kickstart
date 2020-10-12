@@ -2,7 +2,9 @@
   "name": "pipeline-example-kickstart",
   "description": "",
   "version": "0.1.0",
-  "dependencies": {},
+  "dependencies": {
+    "-": "0.0.1"
+  },
   "devDependencies": {
     "serverless-python-requirements": "^5.1.0"
   }
