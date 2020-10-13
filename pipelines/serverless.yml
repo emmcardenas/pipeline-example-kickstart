@@ -26,8 +26,8 @@ custom:
     prd:
       account_id: "691789668597"
       branch: master
-      json_path: $.ref_type
-      match_equals: tag
+      json_path: $.action
+      match_equals: published
       stacksets_enabled: true
   pythonRequirements:
     dockerizePip: non-linux
