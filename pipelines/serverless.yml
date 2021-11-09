@@ -41,7 +41,7 @@ functions:
     memorySize: 128
     role: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/EmmAWSMasterbuilderLambdaExecutionRole
     environment:
-      security_api_url: https://gw9ryer3tf.execute-api.us-east-1.amazonaws.com/stg
+      security_api_url: https://51ep2a5csi.execute-api.us-east-1.amazonaws.com/stg
       repo_url: https://github.com/emmcardenas/api-example-class.git
       api_key: ${self:custom.config.default.hellhound_api_key}
 

@@ -126,5 +126,3 @@ resources:
         Ref: artifactbucket
       Export:
         Name: artifactbucket
-plugins:
-  - serverless-python-requirements
