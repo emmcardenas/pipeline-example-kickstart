@@ -21,6 +21,7 @@ custom:
     prd:
       account_id: "691789668597"
       stack_name: ${self:service}-${self:custom.stage}
+
 resources:
   Resources:
     artifactbucket:
