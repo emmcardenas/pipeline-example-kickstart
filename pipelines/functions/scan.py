@@ -64,6 +64,7 @@ def get_report(scan_id, user_parameters):
     return requests.get(url, headers=headers)
 
 
+#send notification to sns topic
 def send_notification(report_url, result, user_parameters):
     print('sending notification')
     sns_client = boto3.client('sns')
